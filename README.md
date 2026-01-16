@@ -25,7 +25,7 @@ Include Leaflet, Turf.js, and the plugin:
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
 <!-- WMS Clip Plugin -->
-<script src="https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@v1.0.0/leaflet-wms-crop.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@latest/leaflet-wms-crop.js"></script>
 ```
 
 **Note:** Turf.js is required for merging multiple features in FeatureCollection.
@@ -45,7 +45,7 @@ Include Leaflet, Turf.js, and the plugin:
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@v1.0.0/leaflet-wms-crop.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@latest/leaflet-wms-crop.js"></script>
     <script>
         // Create map
         var map = L.map('map').setView([20, 77], 5);
