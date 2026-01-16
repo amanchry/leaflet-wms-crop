@@ -100,80 +100,6 @@ L.tileLayer.wms.clipped(baseUrl, options, boundary)
 
 `L.TileLayer.WMS.Clipped` - A Leaflet tile layer clipped to the boundary
 
-### Boundary Formats
-
-The plugin accepts multiple boundary formats:
-
-#### 1. Array of [lat, lng] Pairs
-
-```javascript
-var boundary = [
-    [51.5, -0.5],
-    [52.0, -0.5],
-    [52.0, 0.5],
-    [51.5, 0.5],
-    [51.5, -0.5]  // Must close polygon
-];
-
-var wmsLayer = L.tileLayer.wms.clipped(wmsUrl, options, boundary);
-```
-
-#### 2. L.LatLngBounds (Rectangle)
-
-```javascript
-var bounds = L.latLngBounds(
-    [51.0, -1.0],  // Southwest
-    [52.0, 1.0]    // Northeast
-);
-
-var wmsLayer = L.tileLayer.wms.clipped(wmsUrl, options, bounds);
-```
-
-#### 3. L.Polygon
-
-```javascript
-var polygon = L.polygon([
-    [51.5, -0.5],
-    [52.0, -0.5],
-    [52.0, 0.5],
-    [51.5, 0.5]
-]);
-
-var wmsLayer = L.tileLayer.wms.clipped(wmsUrl, options, polygon);
-```
-
-#### 4. GeoJSON
-
-```javascript
-// Polygon
-var geoJson = {
-    type: 'Polygon',
-    coordinates: [[
-        [-0.5, 51.5],  // [lng, lat]
-        [0.5, 51.5],
-        [0.5, 52.0],
-        [-0.5, 52.0],
-        [-0.5, 51.5]
-    ]]
-};
-
-// FeatureCollection (all features will be merged automatically)
-var geoJson = {
-    type: 'FeatureCollection',
-    features: [
-        {
-            type: 'Feature',
-            geometry: {
-                type: 'Polygon',
-                coordinates: [[...]]
-            }
-        },
-        // ... more features
-    ]
-};
-
-var wmsLayer = L.tileLayer.wms.clipped(wmsUrl, options, geoJson);
-```
 
 ### Methods
 
@@ -204,9 +130,9 @@ console.log(currentBoundary); // Array of [lat, lng] pairs
 
 
 
-## 🗺️ Demo
+## Demo
 
-See `wms-crop-demo.html` for a complete working example that:
+See `index.html` for a complete working example that:
 - Loads a GeoJSON boundary from URL
 - Merges multiple features using Turf.js
 - Clips WMS layer to the boundary
