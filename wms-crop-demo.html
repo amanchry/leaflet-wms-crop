@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>WMS Clip Plugin Demo </title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WMS Clip Plugin Demo </h1>
+    <p>WMS layer clipped to boundary</p>
+    <div id="map"></div>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="leaflet-wms-crop.js"></script>
+    <script>
+        // WMS Server URL (using demo server)
+        // Using a public WMS server for demo
+        var WMS_URL = 'https://services.terrascope.be/wms/v2';
+        var WMS_LAYERS = 'WORLDCOVER_2021_MAP';
+
+        var map;
+        var wmsLayer = null;
+        var boundaryLayer = null;
+
+        // Initialize map
+        map = L.map('map').setView([0, 37], 6);
+
+        // Add base tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // url = 'kenya.geojson';
+        url="https://raw.githubusercontent.com/waterinag/eqipa-docs/refs/heads/main/docs/assets/IndiaBoundary.geojson"
+
+        // Load boundary and clip WMS layer
+        fetch(url)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Failed to load boundary: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(function(geoJson) {
+                processGeoJSON(geoJson);
+            })
+            .catch(function(error) {
+                console.error('Error loading boundary:', error);
+                alert('Failed to load boundary: ' + error.message);
+            });
+
+        // Process GeoJSON and merge all features using Turf.js
+        function processGeoJSON(geoJson) {
+            var mergedPolygon;
+            
+            // Handle FeatureCollection - merge all features using Turf
+            if (geoJson.type === 'FeatureCollection' && geoJson.features.length > 0) {
+                // Start with first feature
+                mergedPolygon = geoJson.features[0];
+                
+                // Union all remaining features
+                for (var i = 1; i < geoJson.features.length; i++) {
+                    try {
+                        mergedPolygon = turf.union(mergedPolygon, geoJson.features[i]);
+                    } catch (e) {
+                        // If union fails, try combining
+                        console.warn('Union failed for feature', i, e);
+                    }
+                }
+            } else if (geoJson.type === 'Feature') {
+                mergedPolygon = geoJson;
+            } else if (geoJson.type === 'Polygon' || geoJson.type === 'MultiPolygon') {
+                mergedPolygon = turf.feature(geoJson);
+            } else {
+                throw new Error('Unsupported GeoJSON type');
+            }
+
+            // Extract coordinates from merged polygon [lng, lat] -> [lat, lng]
+            var geometry = mergedPolygon.geometry;
+            var coordinates = [];
+            
+            if (geometry.type === 'Polygon') {
+                coordinates = geometry.coordinates[0].map(function(coord) {
+                    return [coord[1], coord[0]]; // [lng, lat] -> [lat, lng]
+                });
+            } else if (geometry.type === 'MultiPolygon') {
+                // Use first polygon's outer ring
+                coordinates = geometry.coordinates[0][0].map(function(coord) {
+                    return [coord[1], coord[0]]; // [lng, lat] -> [lat, lng]
+                });
+            } else {
+                throw new Error('Unsupported geometry type');
+            }
+
+            // Add boundary outline
+            boundaryLayer = L.polygon(coordinates, {
+                color: '#ff0000',
+                fill: false,
+                weight: 2,
+                opacity: 0.8,
+                dashArray: '5, 5'
+            }).addTo(map);
+
+            // Fit map to boundary
+            map.fitBounds(boundaryLayer.getBounds());
+
+            // Create and add clipped WMS layer
+            wmsLayer = L.tileLayer.wms.clipped(WMS_URL, {
+                layers: WMS_LAYERS,
+                format: 'image/png',
+                transparent: true,
+                opacity: 1,
+                attribution: 'WMS Clipped'
+            }, coordinates);
+
+            wmsLayer.addTo(map);
+        }
+
+
+    </script>
+</body>
+
+</html>
