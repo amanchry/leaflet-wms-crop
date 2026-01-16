@@ -3,7 +3,7 @@
 A Leaflet.js plugin that clips/crops WMS layers in client side to show only within a specified GeoJSON boundary or extent.
 
 
-## 📦 Installation
+## Installation
 
 ### Option 1: Direct Download
 
@@ -30,7 +30,7 @@ Include Leaflet, Turf.js, and the plugin:
 
 **Note:** Turf.js is required for merging multiple features in FeatureCollection.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Example
 
