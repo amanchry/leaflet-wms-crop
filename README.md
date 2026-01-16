@@ -1,6 +1,6 @@
 # Leaflet WMS Clip Plugin
 
-A Leaflet.js plugin that clips/crops WMS layers in client side to show only within a specified GeoJSON boundary or extent.
+A lightweight **Leaflet.js plugin** that clips/crops **WMS TileLayers on the client-side**, so the WMS is only visible **inside a given boundary** (Polygon / GeoJSON / extent).
 
 
 ## Installation
