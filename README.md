@@ -128,6 +128,113 @@ var currentBoundary = wmsLayer.getBoundary();
 console.log(currentBoundary); // Array of [lat, lng] pairs
 ```
 
+## Boundary Formats
+
+The plugin supports multiple boundary formats for clipping WMS layers. The boundary will be automatically normalized internally.
+
+### 1. Array of Coordinates
+
+The simplest format: an array of `[lat, lng]` coordinate pairs. The polygon should be closed (first and last point should be the same).
+
+```javascript
+var boundary = [
+    [35.6, 68.0],  // NW
+    [35.6, 97.5],  // NE
+    [6.5, 97.5],   // SE
+    [6.5, 68.0],   // SW
+    [35.6, 68.0]   // Close polygon
+];
+
+var wmsLayer = L.tileLayer.wms.clipped(url, options, boundary);
+```
+
+### 2. L.LatLngBounds
+
+Use Leaflet's `LatLngBounds` for rectangular boundaries.
+
+```javascript
+var bounds = L.latLngBounds([6.5, 68.0], [35.6, 97.5]); // [south, west], [north, east]
+var wmsLayer = L.tileLayer.wms.clipped(url, options, bounds);
+```
+
+### 3. L.Polygon
+
+Use an existing Leaflet `Polygon` layer.
+
+```javascript
+var polygon = L.polygon([
+    [35.6, 68.0],
+    [35.6, 97.5],
+    [6.5, 97.5],
+    [6.5, 68.0]
+]);
+
+var wmsLayer = L.tileLayer.wms.clipped(url, options, polygon);
+```
+
+### 4. GeoJSON Polygon
+
+Standard GeoJSON Polygon format. Note: GeoJSON uses `[lng, lat]` coordinate order, which is automatically converted.
+
+```javascript
+var geoJsonPolygon = {
+    "type": "Polygon",
+    "coordinates": [[
+        [68.0, 35.6],  // [lng, lat]
+        [97.5, 35.6],
+        [97.5, 6.5],
+        [68.0, 6.5],
+        [68.0, 35.6]   // Close polygon
+    ]]
+};
+
+var wmsLayer = L.tileLayer.wms.clipped(url, options, geoJsonPolygon);
+```
+
+### 5. GeoJSON MultiPolygon
+
+GeoJSON MultiPolygon format. Only the first polygon in the MultiPolygon will be used.
+
+```javascript
+var geoJsonMultiPolygon = {
+    "type": "MultiPolygon",
+    "coordinates": [[[
+        [68.0, 35.6],
+        [97.5, 35.6],
+        [97.5, 6.5],
+        [68.0, 6.5],
+        [68.0, 35.6]
+    ]]]
+};
+
+var wmsLayer = L.tileLayer.wms.clipped(url, options, geoJsonMultiPolygon);
+```
+
+### 6. GeoJSON Feature
+
+A GeoJSON Feature object containing a Polygon or MultiPolygon geometry.
+
+```javascript
+var geoJsonFeature = {
+    "type": "Feature",
+    "properties": {
+        "name": "India Boundary"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+            [68.0, 35.6],
+            [97.5, 35.6],
+            [97.5, 6.5],
+            [68.0, 6.5],
+            [68.0, 35.6]
+        ]]
+    }
+};
+
+var wmsLayer = L.tileLayer.wms.clipped(url, options, geoJsonFeature);
+```
+
 
 
 ## Demo
