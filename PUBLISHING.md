@@ -1,9 +1,18 @@
 # Publishing Guide
 
-This guide explains how to publish the plugin to both npm and GitHub (for jsDelivr).
+This guide explains how to publish the plugin to both npm and GitHub.
 
-## 📦 Publishing to npm
+<!-- npm  -->
+npm i leaflet-wms-crop
+<script src="https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@latest/leaflet-wms-crop.js"></script>
 
+<!-- GitHUB (jsdel) -->
+https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@latest/leaflet-wms-crop.js
+
+
+<!-- ------------------- -->
+## Publishing to npm 
+<!-- ------------------- -->
 ### Step 1: Update package.json
 
 Make sure `package.json` has correct details:
@@ -28,7 +37,6 @@ If taken, use:
 ```bash
 npm login
 ```
-
 Create account at https://www.npmjs.com/signup if needed.
 
 ### Step 4: Publish
@@ -48,12 +56,6 @@ Check your package on npm:
 https://www.npmjs.com/package/leaflet-wms-crop
 ```
 
-### Step 6: Update Version
-
-For updates:
-1. Update version in `package.json` (e.g., `1.0.1`)
-2. Run `npm publish` again
-3. New version appears on unpkg automatically
 
 ---
 
@@ -95,35 +97,9 @@ https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@v1.0.0/leaflet-wms-crop.js
 
 ---
 
-## 📋 Files to Publish
-
-### For npm:
-
-**Included (via package.json "files"):**
-- ✅ `leaflet-wms-crop.js`
-- ✅ `README.md`
-- ✅ `LICENSE`
-- ✅ `package.json`
-
-**Excluded (via .npmignore):**
-- ❌ HTML demo files
-- ❌ GeoJSON test files
-- ❌ Git files
-- ❌ node_modules
-
-### For GitHub:
-
-**Include all:**
-- ✅ `leaflet-wms-crop.js`
-- ✅ `README.md`
-- ✅ `LICENSE`
-- ✅ `package.json`
-- ✅ `index.html` (demo)
-- ✅ `.npmignore`
-
----
-
-## 🔗 Usage URLs
+<!-- ------------------- -->
+## Usage URLs
+<!-- ------------------- -->
 
 ### npm (unpkg)
 
@@ -150,23 +126,11 @@ https://cdn.jsdelivr.net/gh/amanchry/leaflet-wms-crop@v1.0.0/leaflet-wms-crop.js
 
 ---
 
-## ✅ Pre-Publish Checklist
-
-Before publishing:
-
-- [ ] Update version in `package.json`
-- [ ] Update repository URL in `package.json`
-- [ ] Update author name in `package.json`
-- [ ] Test the plugin works
-- [ ] Verify `.npmignore` excludes unnecessary files
-- [ ] Update README with correct URLs
-- [ ] Create/update LICENSE file
-- [ ] Test npm/React usage (if applicable)
-
----
 
 ## 📝 Update Process
+1. Edit the code
 
+2. Push on npm
 ### For npm:
 
 ```bash
@@ -180,6 +144,7 @@ npm version major  # 1.0.0 -> 2.0.0
 npm publish
 ```
 
+3. Push on GitHub
 ### For GitHub:
 
 ```bash
@@ -194,43 +159,6 @@ git push
 # Publish
 ```
 
----
-
-## 🎯 Quick Start Commands
-
-### npm (First Time)
-
-```bash
-npm login
-npm publish
-```
-
-### npm (Updates)
-
-```bash
-npm version patch
-npm publish
-```
-
-### GitHub (First Time)
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/amanchry/leaflet-wms-crop.git
-git push -u origin main
-# Then create release on GitHub
-```
-
-### GitHub (Updates)
-
-```bash
-git add .
-git commit -m "Update description"
-git push
-# Then create new release on GitHub
-```
 
 ---
 
