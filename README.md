@@ -30,7 +30,7 @@ import 'leaflet-wms-crop/leaflet-wms-crop.js';
 
 **Via npm (unpkg.com):**
 ```html
-<script src="https://unpkg.com/leaflet-wms-crop@1.0.0/leaflet-wms-crop.js"></script>
+<script src="https://unpkg.com/leaflet-wms-crop@latest/leaflet-wms-crop.js"></script>
 ```
 
 ## Quick Start
@@ -268,155 +268,62 @@ fetch('https://example.com/boundary.geojson')
 ### Basic React Example
 
 ```jsx
-import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import '@turf/turf/turf.min.js';
-import 'leaflet-wms-crop';
+import { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet-wms-crop";
 
-function MapComponent() {
-    const mapRef = useRef(null);
-    const mapInstanceRef = useRef(null);
+export default function MapComponent() {
+  const mapDivRef = useRef(null);
+  const mapRef = useRef(null);
 
-    useEffect(() => {
-        if (mapRef.current && !mapInstanceRef.current) {
-            // Initialize map
-            const map = L.map(mapRef.current).setView([20, 77], 5);
-            mapInstanceRef.current = map;
+  useEffect(() => {
+    if (!mapDivRef.current || mapRef.current) return;
 
-            // Add base layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+    // Create map
+    const map = L.map(mapDivRef.current).setView([20, 77], 5);
+    mapRef.current = map;
 
-            // Define boundary
-            const boundary = [
-                [35.6, 68.0],
-                [35.6, 97.5],
-                [6.5, 97.5],
-                [6.5, 68.0],
-                [35.6, 68.0]
-            ];
+    // Base layer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
 
-            // Create clipped WMS layer
-            const wmsLayer = L.tileLayer.wms.clipped('https://services.terrascope.be/wms/v2', {
-                layers: 'WORLDCOVER_2021_MAP',
-                format: 'image/png',
-                transparent: true,
-                opacity: 1
-            }, boundary);
+    // India boundary (simple bbox polygon)
+    const boundary = [
+      [35.6, 68.0], // NW
+      [35.6, 97.5], // NE
+      [6.5, 97.5],  // SE
+      [6.5, 68.0],  // SW
+      [35.6, 68.0], // close
+    ];
 
-            wmsLayer.addTo(map);
+    // Create clipped WMS layer
+    const wmsLayer = L.tileLayer.wms.clipped(
+      "https://services.terrascope.be/wms/v2",
+      {
+        layers: "WORLDCOVER_2021_MAP",
+        format: "image/png",
+        transparent: true,
+        opacity: 1,
+      },
+      boundary
+    );
 
-            // Cleanup
-            return () => {
-                map.remove();
-            };
-        }
-    }, []);
+    wmsLayer.addTo(map);
 
-    return <div ref={mapRef} style={{ height: '100vh', width: '100%' }} />;
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  return (
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <div ref={mapDivRef} style={{ height: "100%", width: "100%" }} />
+    </div>
+  );
 }
 
-export default MapComponent;
-```
-
-### React with Dynamic Boundary Updates
-
-```jsx
-import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import '@turf/turf/turf.min.js';
-import 'leaflet-wms-crop';
-
-function ClippedWMSMap({ boundary, wmsUrl, wmsLayers }) {
-    const mapRef = useRef(null);
-    const wmsLayerRef = useRef(null);
-
-    useEffect(() => {
-        if (!mapRef.current) return;
-
-        const map = L.map(mapRef.current).setView([20, 77], 5);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-        // Create clipped WMS layer
-        const wmsLayer = L.tileLayer.wms.clipped(wmsUrl, {
-            layers: wmsLayers,
-            format: 'image/png',
-            transparent: true
-        }, boundary);
-
-        wmsLayer.addTo(map);
-        wmsLayerRef.current = wmsLayer;
-
-        return () => map.remove();
-    }, []);
-
-    // Update boundary when prop changes
-    useEffect(() => {
-        if (wmsLayerRef.current && boundary) {
-            wmsLayerRef.current.setBoundary(boundary);
-        }
-    }, [boundary]);
-
-    return <div ref={mapRef} style={{ height: '500px' }} />;
-}
-```
-
-### React with GeoJSON Loading
-
-```jsx
-import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import * as turf from '@turf/turf';
-import 'leaflet-wms-crop';
-
-function GeoJSONClippedMap({ geoJsonUrl, wmsUrl, wmsLayers }) {
-    const mapRef = useRef(null);
-    const [boundary, setBoundary] = useState(null);
-
-    useEffect(() => {
-        // Load and process GeoJSON
-        fetch(geoJsonUrl)
-            .then(response => response.json())
-            .then(geoJson => {
-                let mergedPolygon = geoJson;
-                
-                if (geoJson.type === 'FeatureCollection') {
-                    mergedPolygon = geoJson.features[0];
-                    for (let i = 1; i < geoJson.features.length; i++) {
-                        mergedPolygon = turf.union(mergedPolygon, geoJson.features[i]);
-                    }
-                }
-
-                const geometry = mergedPolygon.geometry;
-                const coordinates = geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
-                setBoundary(coordinates);
-            });
-    }, [geoJsonUrl]);
-
-    useEffect(() => {
-        if (!mapRef.current || !boundary) return;
-
-        const map = L.map(mapRef.current).setView([20, 77], 5);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-        const wmsLayer = L.tileLayer.wms.clipped(wmsUrl, {
-            layers: wmsLayers,
-            format: 'image/png',
-            transparent: true
-        }, boundary);
-
-        wmsLayer.addTo(map);
-
-        return () => map.remove();
-    }, [boundary, wmsUrl, wmsLayers]);
-
-    return <div ref={mapRef} style={{ height: '500px' }} />;
-}
 ```
 
 ### Next.js Configuration
