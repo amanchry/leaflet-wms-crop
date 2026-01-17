@@ -1,0 +1,29 @@
+# Ignore demo/test files
+*.html
+test.html
+wms-crop-demo.html
+
+# Ignore GeoJSON test files
+*.geojson
+kenya.geojson
+bound.geojson
+
+# Ignore development files
+local-readme.md
+PUBLISHING.md
+.vscode/
+.idea/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+npm-debug.log*
+
+# Note: The following files will be published (defined in package.json "files"):
+# - leaflet-wms-crop.js
+# - README.md
+# - LICENSE
+# - package.json

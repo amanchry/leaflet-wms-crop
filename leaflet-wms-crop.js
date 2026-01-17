@@ -6,26 +6,38 @@
  * @author Aman Chaudhary
  * @version 1.0.0
  * 
- * Usage:
+ * Usage (Browser):
  *   var clippedWMS = L.tileLayer.wms.clipped('http://wms.example.com/wms', {
  *       layers: 'layer1',
  *       format: 'image/png',
  *       transparent: true
  *   }, boundaryPolygon).addTo(map);
  * 
- * Or with bounds:
- *   var clippedWMS = L.tileLayer.wms.clipped('http://wms.example.com/wms', {
- *       layers: 'layer1'
- *   }, L.latLngBounds([[lat1, lng1], [lat2, lng2]])).addTo(map);
+ * Usage (npm/React):
+ *   import 'leaflet-wms-crop';
+ *   // or
+ *   require('leaflet-wms-crop');
  */
 
-(function() {
+(function (root, factory) {
     'use strict';
-
-    // Check if Leaflet is available
-    if (typeof L === 'undefined') {
-        throw new Error('Leaflet must be loaded first');
+    
+    // UMD (Universal Module Definition) support
+    if (typeof define === 'function' && define.amd) {
+        // AMD (RequireJS)
+        define(['leaflet'], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // CommonJS (Node.js, React, webpack, etc.)
+        module.exports = factory(require('leaflet'));
+    } else {
+        // Browser globals (default)
+        if (typeof root.L === 'undefined') {
+            throw new Error('Leaflet must be loaded first');
+        }
+        factory(root.L);
     }
+}(typeof self !== 'undefined' ? self : this, function (L) {
+    'use strict';
 
     // ============================================================================
     // UTILITY FUNCTIONS
@@ -578,4 +590,28 @@
         return new L.ImageOverlay.WMS.Clipped(baseUrl, options, boundary);
     };
 
-})();
+    // Export for module systems
+    return {
+        TileLayer: {
+            WMS: {
+                Clipped: L.TileLayer.WMS.Clipped
+            }
+        },
+        ImageOverlay: {
+            WMS: {
+                Clipped: L.ImageOverlay.WMS.Clipped
+            }
+        },
+        tileLayer: {
+            wms: {
+                clipped: L.tileLayer.wms.clipped
+            }
+        },
+        imageOverlay: {
+            wms: {
+                clipped: L.imageOverlay.wms.clipped
+            }
+        }
+    };
+
+}));

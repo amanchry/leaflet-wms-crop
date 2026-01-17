@@ -1,0 +1,41 @@
+{
+  "name": "leaflet-wms-crop",
+  "version": "1.0.0",
+  "description": "A Leaflet.js plugin that clips/crops WMS layers to GeoJSON boundaries on the client side",
+  "main": "leaflet-wms-crop.js",
+  "module": "leaflet-wms-crop.js",
+  "files": [
+    "leaflet-wms-crop.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "leaflet",
+    "wms",
+    "clip",
+    "crop",
+    "geojson",
+    "boundary",
+    "maps",
+    "gis",
+    "react",
+    "vue",
+    "angular"
+  ],
+  "author": "Aman Chaudhary",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amanchry/leaflet-wms-crop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/amanchry/leaflet-wms-crop/issues"
+  },
+  "homepage": "https://amanchry.github.io/leaflet-wms-crop/",
+  "peerDependencies": {
+    "leaflet": "^1.0.0"
+  },
+  "devDependencies": {
+    "@turf/turf": "^6.0.0"
+  }
+}
