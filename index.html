@@ -86,6 +86,38 @@
             font-size: 14px;
             color: #24292e;
         }
+
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            font-size: 12px;
+            line-height: 18px;
+        }
+
+        .legend-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #24292e;
+            border-bottom: 1px solid #d1d5da;
+            padding-bottom: 5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -240,6 +272,54 @@
 
             // Setup radio button event handlers
             setupLayerToggle();
+
+            // Add legend
+            addLegend();
+        }
+
+        // Function to add legend to the map
+        function addLegend() {
+            // Create custom legend control
+            var LegendControl = L.Control.extend({
+                onAdd: function(map) {
+                    var div = L.DomUtil.create('div', 'legend');
+                    
+                    var legendHTML = '<div class="legend-title">ESA LULC 2021</div>';
+                    
+                    // ESA WorldCover 2021 legend items (typical colors)
+                    var legendItems = [
+                        { color: '#006400', label: 'Tree cover' },
+                        { color: '#ffbb22', label: 'Shrubland' },
+                        { color: '#ffff4c', label: 'Grassland' },
+                        { color: '#f096ff', label: 'Cropland' },
+                        { color: '#fa0000', label: 'Built-up' },
+                        { color: '#b4b4b4', label: 'Bare / sparse vegetation' },
+                        { color: '#f0f0f0', label: 'Snow and ice' },
+                        { color: '#0064c8', label: 'Permanent water bodies' },
+                        { color: '#0096a0', label: 'Herbaceous wetland' },
+                        { color: '#00cf75', label: 'Mangroves' },
+                        { color: '#fae6a0', label: 'Moss and lichen' }
+                    ];
+                    
+                    legendItems.forEach(function(item) {
+                        legendHTML += '<div class="legend-item">' +
+                            '<span class="legend-color" style="background-color: ' + item.color + '"></span>' +
+                            '<span>' + item.label + '</span>' +
+                            '</div>';
+                    });
+                    
+                    div.innerHTML = legendHTML;
+                    
+                    // Prevent map click when clicking on legend
+                    L.DomEvent.disableClickPropagation(div);
+                    
+                    return div;
+                }
+            });
+            
+            // Add legend to map (bottom right)
+            var legend = new LegendControl({ position: 'bottomright' });
+            legend.addTo(map);
         }
 
         // Function to toggle between clipped and unclipped layers
