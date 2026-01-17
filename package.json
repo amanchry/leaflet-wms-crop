@@ -11,16 +11,12 @@
   ],
   "keywords": [
     "leaflet",
+    "plugins",
     "wms",
     "clip",
     "crop",
     "geojson",
-    "boundary",
-    "maps",
-    "gis",
-    "react",
-    "vue",
-    "angular"
+    "maps"
   ],
   "author": "Aman Chaudhary",
   "license": "MIT",

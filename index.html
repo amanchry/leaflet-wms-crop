@@ -48,6 +48,44 @@
             height: 600px;
             border: 2px solid #333;
         }
+
+        .layer-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f6f8fa;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+        }
+
+        .layer-controls h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #24292e;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 14px;
+            color: #24292e;
+        }
     </style>
 </head>
 
@@ -63,6 +101,23 @@
     </header>
     <h2>WMS Layer Clipped to Boundary</h2>
     <p>This demo shows a WMS layer clipped to a GeoJSON boundary</p>
+    
+    <div class="layer-controls">
+        <h3>Layer Display Mode:</h3>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="unclipped" name="layerMode" value="unclipped">
+                <label for="unclipped">Full WMS Layer</label>
+            </div>
+
+            <div class="radio-option">
+                <input type="radio" id="clipped" name="layerMode" value="clipped" checked>
+                <label for="clipped">Clipped WMS Layer</label>
+            </div>
+            
+        </div>
+    </div>
+    
     <div id="map"></div>
 
     <!-- Make sure you put this AFTER Leaflet's CSS -->
@@ -77,10 +132,12 @@
 
         var map;
         var wmsLayer = null;
+        var wmsLayerUnclipped = null;
         var boundaryLayer = null;
+        var coordinates = null;
 
-        // Initialize map
-        map = L.map('map').setView([0, 37], 6);
+        // Initialize map - centered on India
+        map = L.map('map').setView([20.5937, 78.9629], 5);
 
         // Add base tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -133,7 +190,7 @@
 
             // Extract coordinates from merged polygon [lng, lat] -> [lat, lng]
             var geometry = mergedPolygon.geometry;
-            var coordinates = [];
+            coordinates = [];
             
             if (geometry.type === 'Polygon') {
                 coordinates = geometry.coordinates[0].map(function(coord) {
@@ -160,7 +217,7 @@
             // Fit map to boundary
             map.fitBounds(boundaryLayer.getBounds());
 
-            // Create and add clipped WMS layer
+            // Create clipped WMS layer
             wmsLayer = L.tileLayer.wms.clipped(WMS_URL, {
                 layers: WMS_LAYERS,
                 format: 'image/png',
@@ -169,7 +226,47 @@
                 attribution: 'WMS Clipped'
             }, coordinates);
 
+            // Create unclipped WMS layer
+            wmsLayerUnclipped = L.tileLayer.wms(WMS_URL, {
+                layers: WMS_LAYERS,
+                format: 'image/png',
+                transparent: true,
+                opacity: 1,
+                attribution: 'WMS Unclipped'
+            });
+
+            // Add clipped layer by default
             wmsLayer.addTo(map);
+
+            // Setup radio button event handlers
+            setupLayerToggle();
+        }
+
+        // Function to toggle between clipped and unclipped layers
+        function setupLayerToggle() {
+            var radioButtons = document.querySelectorAll('input[name="layerMode"]');
+            
+            radioButtons.forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'clipped') {
+                        // Remove unclipped layer and add clipped layer
+                        if (wmsLayerUnclipped && map.hasLayer(wmsLayerUnclipped)) {
+                            map.removeLayer(wmsLayerUnclipped);
+                        }
+                        if (wmsLayer && !map.hasLayer(wmsLayer)) {
+                            wmsLayer.addTo(map);
+                        }
+                    } else if (this.value === 'unclipped') {
+                        // Remove clipped layer and add unclipped layer
+                        if (wmsLayer && map.hasLayer(wmsLayer)) {
+                            map.removeLayer(wmsLayer);
+                        }
+                        if (wmsLayerUnclipped && !map.hasLayer(wmsLayerUnclipped)) {
+                            wmsLayerUnclipped.addTo(map);
+                        }
+                    }
+                });
+            });
         }
 
 
